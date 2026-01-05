@@ -41,12 +41,13 @@ jobs:
       # Run as a mlflow project
       - name: Run mlflow project
         run: |
+          mkdir -p mlruns
           mlflow run MLproject --env-manager=local
 
       # Get latest run_id
       - name: Get latest MLflow run_id
         run: |
-          RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+          RUN_ID=$(python -c "import mlflow; print(mlflow.search_runs(order_by=['attribute.start_time DESC'], max_results=1)['run_id'][0])")
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "Latest run_id: $RUN_ID"
 
